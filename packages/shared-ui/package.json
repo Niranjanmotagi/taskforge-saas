@@ -1,0 +1,20 @@
+{
+  "name": "@taskforge/shared-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TaskForge design system: tokens, Tailwind preset, and UI utilities",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tailwind-preset": "./tailwind-preset.js",
+    "./tokens.css": "./tokens.css"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

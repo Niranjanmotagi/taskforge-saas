@@ -1,0 +1,36 @@
+{
+  "name": "taskforge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TaskForge — Enterprise SaaS Project Management Platform",
+  "author": "TaskForge Engineering",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=@taskforge/backend",
+    "dev:frontend": "npm run dev --workspace=@taskforge/frontend",
+    "build": "npm run build:packages && npm run build:backend && npm run build:frontend",
+    "build:packages": "npm run build --workspace=@taskforge/shared-types --workspace=@taskforge/shared-utils",
+    "build:backend": "npm run build --workspace=@taskforge/backend",
+    "build:frontend": "npm run build --workspace=@taskforge/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "prisma:generate": "npm run prisma:generate --workspace=@taskforge/backend",
+    "prisma:migrate": "npm run prisma:migrate --workspace=@taskforge/backend",
+    "prisma:seed": "npm run prisma:seed --workspace=@taskforge/backend",
+    "docker:dev": "docker compose -f docker-compose.yml up -d",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.4.2"
+  }
+}

@@ -1,0 +1,91 @@
+/*
+ * TaskForge design tokens — CSS custom properties for light & dark themes.
+ * Consumed by the Tailwind preset (hsl(var(--token)) color mapping).
+ * Aesthetic: Linear/Vercel-inspired — near-neutral surfaces, indigo brand.
+ */
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 8%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 8%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 8%;
+
+  --primary: 243 75% 59%; /* indigo-600 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 240 6% 10%;
+
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 4% 46%;
+
+  --accent: 240 5% 96%;
+  --accent-foreground: 240 6% 10%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 160 84% 39%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 38 92% 50%;
+  --warning-foreground: 240 10% 8%;
+
+  --border: 240 6% 90%;
+  --input: 240 6% 90%;
+  --ring: 243 75% 59%;
+
+  --sidebar: 240 5% 98%;
+  --sidebar-foreground: 240 6% 25%;
+
+  --radius: 0.5rem;
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --shadow-popover: 0 4px 16px -2px rgb(0 0 0 / 0.1), 0 2px 6px -2px rgb(0 0 0 / 0.06);
+}
+
+.dark {
+  --background: 240 10% 4%;
+  --foreground: 240 5% 92%;
+
+  --card: 240 8% 6%;
+  --card-foreground: 240 5% 92%;
+
+  --popover: 240 8% 7%;
+  --popover-foreground: 240 5% 92%;
+
+  --primary: 243 82% 67%; /* indigo-500 for dark contrast */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 6% 12%;
+  --secondary-foreground: 240 5% 92%;
+
+  --muted: 240 6% 12%;
+  --muted-foreground: 240 5% 58%;
+
+  --accent: 240 6% 14%;
+  --accent-foreground: 240 5% 92%;
+
+  --destructive: 0 72% 56%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 160 70% 42%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 38 92% 55%;
+  --warning-foreground: 240 10% 8%;
+
+  --border: 240 6% 15%;
+  --input: 240 6% 16%;
+  --ring: 243 82% 67%;
+
+  --sidebar: 240 8% 5%;
+  --sidebar-foreground: 240 5% 70%;
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-popover: 0 8px 24px -4px rgb(0 0 0 / 0.5);
+}
