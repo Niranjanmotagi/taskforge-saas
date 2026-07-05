@@ -25,6 +25,11 @@ export function createApp(): Express {
   app.set('trust proxy', 1);
   app.disable('x-powered-by');
 
+  // Prisma BigInt columns (storage byte counts) must serialize as numbers.
+  app.set('json replacer', (_key: string, value: unknown) =>
+    typeof value === 'bigint' ? Number(value) : value
+  );
+
   app.use(requestContext);
   app.use(helmet());
   app.use(

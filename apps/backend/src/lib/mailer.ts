@@ -5,7 +5,9 @@ import { logger } from '@/lib/logger';
 let transporter: Transporter | null = null;
 
 function getTransporter(): Transporter | null {
-  if (!env.SMTP_HOST) {
+  // Host AND credentials must be present — a half-configured SMTP (e.g. the
+  // .env.example placeholder host without a user) falls back to dev logging.
+  if (!env.SMTP_HOST || !env.SMTP_USER) {
     logger.warn('SMTP not configured — emails will be logged instead of sent');
     return null;
   }
@@ -34,7 +36,9 @@ export interface MailOptions {
 export async function sendMail(options: MailOptions): Promise<void> {
   const t = getTransporter();
   if (!t) {
-    logger.info(`[mail:dev] to=${options.to} subject="${options.subject}"`);
+    // Surface the primary action link so flows are testable without SMTP.
+    const link = /href="([^"]+)"/.exec(options.html)?.[1];
+    logger.info(`[mail:dev] to=${options.to} subject="${options.subject}"${link ? ` link=${link}` : ''}`);
     return;
   }
   await t.sendMail({
