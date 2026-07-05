@@ -1,0 +1,61 @@
+import Redis from 'ioredis';
+import { env } from '@/config/env';
+import { logger } from '@/lib/logger';
+
+function createRedisClient(purpose: string): Redis {
+  const client = new Redis({
+    host: env.REDIS_HOST,
+    port: env.REDIS_PORT,
+    password: env.REDIS_PASSWORD || undefined,
+    // BullMQ requires maxRetriesPerRequest to be null on its connections.
+    maxRetriesPerRequest: purpose === 'queue' ? null : 2,
+    retryStrategy: (times) => Math.min(times * 200, 5000),
+  });
+  client.on('error', (err) => logger.error(`redis(${purpose}) error: ${err.message}`));
+  client.on('connect', () => logger.info(`redis(${purpose}) connected`));
+  return client;
+}
+
+/** General-purpose cache / presence / rate-limit client. */
+export const redis = createRedisClient('cache');
+
+/** Dedicated connection factory for BullMQ (it manages blocking commands). */
+export function createQueueConnection(): Redis {
+  return createRedisClient('queue');
+}
+
+export async function disconnectRedis(): Promise<void> {
+  await redis.quit().catch(() => redis.disconnect());
+}
+
+// ---------------------------------------------------------------------------
+// Small cache helpers
+// ---------------------------------------------------------------------------
+
+export async function cacheGet<T>(key: string): Promise<T | null> {
+  const raw = await redis.get(key);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
+export async function cacheSet(key: string, value: unknown, ttlSeconds: number): Promise<void> {
+  await redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+}
+
+export async function cacheDel(...keys: string[]): Promise<void> {
+  if (keys.length > 0) await redis.del(...keys);
+}
+
+/** Delete keys by prefix (used for workspace-scoped invalidation). */
+export async function cacheDelByPrefix(prefix: string): Promise<void> {
+  const stream = redis.scanStream({ match: `${prefix}*`, count: 100 });
+  const toDelete: string[] = [];
+  for await (const keys of stream) {
+    toDelete.push(...(keys as string[]));
+  }
+  if (toDelete.length > 0) await redis.del(...toDelete);
+}
