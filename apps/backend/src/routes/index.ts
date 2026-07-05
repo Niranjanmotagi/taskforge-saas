@@ -9,6 +9,11 @@ import { timeRouter } from '@/modules/time/time.routes';
 import { reportRouter } from '@/modules/reports/report.routes';
 import { notificationRouter } from '@/modules/notifications/notification.routes';
 import { chatRouter } from '@/modules/chat/chat.routes';
+import { fileRouter } from '@/modules/files/file.routes';
+import { searchRouter } from '@/modules/search/search.routes';
+import { billingRouter } from '@/modules/billing/billing.routes';
+import { aiRouter } from '@/modules/ai/ai.routes';
+import { adminRouter } from '@/modules/admin/admin.routes';
 
 /**
  * API v1 route registry. Each domain module self-registers its router here.
@@ -25,3 +30,8 @@ apiV1.use(timeRouter);
 apiV1.use(reportRouter);
 apiV1.use(notificationRouter);
 apiV1.use(chatRouter);
+apiV1.use(fileRouter);
+apiV1.use(searchRouter);
+apiV1.use(billingRouter);
+apiV1.use(aiRouter);
+apiV1.use(adminRouter);
