@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { ApiError } from '@/utils/api-error';
 import { recordActivity } from '@/services/activity.service';
 import { notify } from '@/services/notification.service';
+import { emitToProject, SOCKET_EVENTS } from '@/services/realtime.service';
 import { toSkipTake, type Pagination } from '@/utils/pagination';
 import { env } from '@/config/env';
 
@@ -241,6 +242,8 @@ export async function createTask(
     entityLabel: `${project.key}-${task.number} ${task.title}`,
     projectId,
   });
+
+  emitToProject(projectId, SOCKET_EVENTS.TASK_CREATED, toCard(task));
 
   const assignedOthers = assigneeIds.filter((id) => id !== actorId);
   if (assignedOthers.length > 0) {
@@ -519,6 +522,8 @@ export async function updateTask(
     projectId: existing.projectId,
   });
 
+  emitToProject(existing.projectId, SOCKET_EVENTS.TASK_UPDATED, toCard(task));
+
   // Notify watchers (excluding the actor) about meaningful updates.
   const watchers = await prisma.taskWatcher.findMany({
     where: { taskId, userId: { not: actorId } },
@@ -644,6 +649,16 @@ export async function moveTask(
     metadata: { toColumn: column.name },
   });
 
+  emitToProject(task.projectId, SOCKET_EVENTS.TASK_MOVED, {
+    taskId,
+    projectId: task.projectId,
+    fromColumnId: task.columnId,
+    toColumnId: column.id,
+    position,
+    movedById: actorId,
+    task: toCard(updated),
+  });
+
   if (isDone && !wasDone) {
     const watchers = await prisma.taskWatcher.findMany({
       where: { taskId, userId: { not: actorId } },
@@ -700,6 +715,8 @@ export async function deleteTask(workspaceId: string, taskId: string, actorId: s
     entityLabel: `${task.project.key}-${task.number} ${task.title}`,
     projectId: task.projectId,
   });
+
+  emitToProject(task.projectId, SOCKET_EVENTS.TASK_DELETED, { taskId, projectId: task.projectId });
 }
 
 // ---------------------------------------------------------------------------

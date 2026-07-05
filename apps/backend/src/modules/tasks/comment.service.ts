@@ -4,6 +4,7 @@ import { env } from '@/config/env';
 import { ApiError } from '@/utils/api-error';
 import { notify } from '@/services/notification.service';
 import { recordActivity } from '@/services/activity.service';
+import { emitToProject, SOCKET_EVENTS } from '@/services/realtime.service';
 
 const COMMENT_INCLUDE = {
   author: { select: { id: true, name: true, avatarUrl: true } },
@@ -81,6 +82,8 @@ export async function createComment(
     projectId: task.projectId,
   });
 
+  emitToProject(task.projectId, SOCKET_EVENTS.COMMENT_CREATED, { taskId, comment });
+
   const link = `${env.APP_URL}/w/${workspaceId}/projects/${task.projectId}/tasks/${taskId}`;
 
   // Mentions get MENTION; other watchers get COMMENT_ADDED.
@@ -131,11 +134,14 @@ export async function updateComment(
   if (comment.authorId !== actorId) {
     throw ApiError.forbidden('You can only edit your own comments');
   }
-  return prisma.comment.update({
+  const updated = await prisma.comment.update({
     where: { id: commentId },
     data: { body, isEdited: true },
     include: COMMENT_INCLUDE,
   });
+  const task = await prisma.task.findUnique({ where: { id: taskId }, select: { projectId: true } });
+  if (task) emitToProject(task.projectId, SOCKET_EVENTS.COMMENT_UPDATED, { taskId, comment: updated });
+  return updated;
 }
 
 /**
@@ -161,4 +167,6 @@ export async function deleteComment(
     where: { id: commentId },
     data: { deletedAt: new Date() },
   });
+  const task = await prisma.task.findUnique({ where: { id: taskId }, select: { projectId: true } });
+  if (task) emitToProject(task.projectId, SOCKET_EVENTS.COMMENT_DELETED, { taskId, commentId });
 }
