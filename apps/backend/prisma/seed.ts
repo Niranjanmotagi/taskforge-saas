@@ -126,6 +126,152 @@ async function main(): Promise<void> {
     update: { systemRole: 'SUPER_ADMIN' },
   });
   console.log(`✓ super-admin ready (${adminEmail})`);
+
+  if (process.env.SEED_DEMO === 'true') {
+    await seedDemo();
+  }
+}
+
+/** Demo workspace with a realistic project, board, tasks, and sprint. */
+async function seedDemo(): Promise<void> {
+  const password = await bcrypt.hash('Demo1234!', 12);
+  const demoUsers = await Promise.all(
+    [
+      { email: 'demo@taskforge.local', name: 'Demo Owner' },
+      { email: 'sam@taskforge.local', name: 'Sam Rivera' },
+      { email: 'priya@taskforge.local', name: 'Priya Patel' },
+    ].map((u) =>
+      prisma.user.upsert({
+        where: { email: u.email },
+        create: { ...u, passwordHash: password, emailVerifiedAt: new Date() },
+        update: {},
+      })
+    )
+  );
+  const [owner, sam, priya] = demoUsers;
+
+  const existing = await prisma.workspace.findUnique({ where: { slug: 'demo-workspace' } });
+  if (existing) {
+    console.log('✓ demo workspace already present');
+    return;
+  }
+
+  const freePlan = await prisma.plan.findUniqueOrThrow({ where: { tier: 'FREE' } });
+
+  const workspace = await prisma.workspace.create({
+    data: {
+      name: 'Demo Workspace',
+      slug: 'demo-workspace',
+      description: 'Explore TaskForge with sample data',
+      ownerId: owner.id,
+      members: {
+        create: [
+          { userId: owner.id, role: 'OWNER' },
+          { userId: sam.id, role: 'MANAGER' },
+          { userId: priya.id, role: 'DEVELOPER' },
+        ],
+      },
+      labels: {
+        create: [
+          { name: 'Bug', color: '#ef4444' },
+          { name: 'Feature', color: '#6366f1' },
+          { name: 'Design', color: '#ec4899' },
+        ],
+      },
+      subscription: { create: { planId: freePlan.id, status: 'ACTIVE' } },
+    },
+    include: { labels: true },
+  });
+
+  await prisma.channel.create({
+    data: {
+      workspaceId: workspace.id,
+      type: 'WORKSPACE',
+      name: 'general',
+      createdById: owner.id,
+      members: { create: demoUsers.map((u) => ({ userId: u.id, isAdmin: u.id === owner.id })) },
+    },
+  });
+
+  const columns = [
+    { name: 'Backlog', category: 'BACKLOG' as const, color: '#94a3b8' },
+    { name: 'Todo', category: 'TODO' as const, color: '#64748b' },
+    { name: 'In Progress', category: 'IN_PROGRESS' as const, color: '#3b82f6' },
+    { name: 'Review', category: 'REVIEW' as const, color: '#8b5cf6' },
+    { name: 'Testing', category: 'TESTING' as const, color: '#f59e0b' },
+    { name: 'Completed', category: 'DONE' as const, color: '#10b981' },
+  ];
+
+  const project = await prisma.project.create({
+    data: {
+      workspaceId: workspace.id,
+      name: 'Website Redesign',
+      key: 'WEB',
+      description: 'Complete overhaul of the marketing site and docs',
+      color: '#6366f1',
+      status: 'ACTIVE',
+      startDate: new Date(Date.now() - 14 * 86400_000),
+      dueDate: new Date(Date.now() + 45 * 86400_000),
+      budgetCents: 2_500_000,
+      clientName: 'Internal',
+      leadId: owner.id,
+      members: { create: demoUsers.map((u) => ({ userId: u.id })) },
+      columns: { create: columns.map((c, i) => ({ ...c, position: i })) },
+    },
+    include: { columns: true },
+  });
+
+  const col = (name: string) => project.columns.find((c) => c.name === name)!;
+  const labelIds = workspace.labels.map((l) => l.id);
+  const ranks = ['f', 'i', 'l', 'o', 'r', 'u', 'x'];
+
+  const demoTasks = [
+    { title: 'Audit current site content', column: 'Completed', assignee: sam.id, priority: 'MEDIUM', points: 3, done: true },
+    { title: 'Design new homepage hero', column: 'Review', assignee: priya.id, priority: 'HIGH', points: 5, label: 2 },
+    { title: 'Implement responsive navigation', column: 'In Progress', assignee: priya.id, priority: 'HIGH', points: 5, label: 1 },
+    { title: 'Migrate blog to MDX', column: 'In Progress', assignee: sam.id, priority: 'MEDIUM', points: 8 },
+    { title: 'Fix broken pricing table on mobile', column: 'Todo', assignee: priya.id, priority: 'URGENT', points: 2, label: 0 },
+    { title: 'Set up analytics events', column: 'Todo', assignee: sam.id, priority: 'LOW', points: 3 },
+    { title: 'Write launch announcement', column: 'Backlog', assignee: owner.id, priority: 'NONE', points: 2 },
+  ];
+
+  let counter = 0;
+  for (const [i, t] of demoTasks.entries()) {
+    counter += 1;
+    await prisma.task.create({
+      data: {
+        workspaceId: workspace.id,
+        projectId: project.id,
+        columnId: col(t.column).id,
+        number: counter,
+        title: t.title,
+        priority: t.priority as never,
+        statusCategory: col(t.column).category,
+        position: ranks[i],
+        storyPoints: t.points,
+        dueDate: new Date(Date.now() + (i + 2) * 3 * 86400_000),
+        completedAt: t.done ? new Date(Date.now() - 2 * 86400_000) : null,
+        creatorId: owner.id,
+        assignees: { create: [{ userId: t.assignee }] },
+        watchers: { create: [{ userId: t.assignee }, ...(t.assignee === owner.id ? [] : [{ userId: owner.id }])] },
+        ...(t.label !== undefined ? { labels: { create: [{ labelId: labelIds[t.label] }] } } : {}),
+      },
+    });
+  }
+  await prisma.project.update({ where: { id: project.id }, data: { taskCounter: counter } });
+
+  await prisma.sprint.create({
+    data: {
+      projectId: project.id,
+      name: 'Sprint 1 — Foundation',
+      goal: 'Ship the new homepage and navigation',
+      status: 'ACTIVE',
+      startDate: new Date(Date.now() - 3 * 86400_000),
+      endDate: new Date(Date.now() + 11 * 86400_000),
+    },
+  });
+
+  console.log('✓ demo workspace seeded (demo@taskforge.local / Demo1234!)');
 }
 
 main()

@@ -24,6 +24,19 @@ export function createQueueConnection(): Redis {
   return createRedisClient('queue');
 }
 
+/**
+ * Plain connection options for BullMQ. BullMQ bundles its own ioredis, so
+ * passing our client instance trips duplicate-type errors — options avoid it.
+ */
+export function queueConnectionOptions(): { host: string; port: number; password?: string; maxRetriesPerRequest: null } {
+  return {
+    host: env.REDIS_HOST,
+    port: env.REDIS_PORT,
+    password: env.REDIS_PASSWORD || undefined,
+    maxRetriesPerRequest: null,
+  };
+}
+
 export async function disconnectRedis(): Promise<void> {
   await redis.quit().catch(() => redis.disconnect());
 }

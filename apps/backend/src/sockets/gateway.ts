@@ -176,7 +176,9 @@ export function registerGateway(io: SocketServer): void {
 
     // ---------------- disconnect ----------------
 
-    socket.on('disconnect', async () => {
+    // 'disconnecting' (not 'disconnect') — socket.rooms is still populated here;
+    // it is already cleared by the time 'disconnect' fires.
+    socket.on('disconnecting', async () => {
       // Remove presence from every workspace room this socket had joined.
       for (const room of socket.rooms) {
         if (room.startsWith('workspace:')) {
