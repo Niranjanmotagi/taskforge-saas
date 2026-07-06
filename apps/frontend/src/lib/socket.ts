@@ -4,11 +4,17 @@ import { useAuthStore } from '@/stores/auth-store';
 
 let socket: Socket | null = null;
 
+/** Empty socketUrl means "same origin as the page" (production single-domain). */
+function resolveSocketUrl(): string {
+  if (clientEnv.socketUrl) return clientEnv.socketUrl;
+  return typeof window !== 'undefined' ? window.location.origin : '';
+}
+
 /** Singleton socket, (re)connected with the current access token. */
 export function getSocket(): Socket {
   const token = useAuthStore.getState().accessToken;
   if (!socket) {
-    socket = io(clientEnv.socketUrl, {
+    socket = io(resolveSocketUrl(), {
       transports: ['websocket'],
       auth: { token },
       autoConnect: Boolean(token),
