@@ -1,31 +1,64 @@
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+
+const INK = '#161616';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Brand panel */}
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-zinc-950 p-10 text-white lg:flex">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(800px circle at 20% 20%, hsl(243 75% 59% / 0.25), transparent 50%), radial-gradient(600px circle at 80% 80%, hsl(280 70% 50% / 0.15), transparent 50%)',
-          }}
+      {/* Brand panel — matches the neo-brutalist marketing style */}
+      <div
+        className="relative hidden flex-col justify-between overflow-hidden border-r-2 bg-[#C9B2F5] p-10 lg:flex"
+        style={{ borderColor: INK, color: INK }}
+      >
+        {/* decorative shapes */}
+        <span
+          className="absolute right-14 top-24 h-16 w-16 rotate-12 rounded-2xl border-2 bg-[#FFD43B]"
+          style={{ borderColor: INK, boxShadow: `4px 4px 0 0 ${INK}` }}
         />
-        <Link href="/" className="relative z-10 flex items-center gap-2 font-semibold">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="h-4 w-4" />
-          </div>
+        <span
+          className="absolute bottom-40 right-24 h-10 w-10 -rotate-6 rounded-full border-2 bg-[#FF5FA2]"
+          style={{ borderColor: INK, boxShadow: `3px 3px 0 0 ${INK}` }}
+        />
+        <span
+          className="absolute bottom-24 left-1/2 h-8 w-8 rotate-45 border-2 bg-[#B9F0CB]"
+          style={{ borderColor: INK, boxShadow: `3px 3px 0 0 ${INK}` }}
+        />
+
+        <Link href="/" className="relative z-10 inline-flex w-fit items-center gap-2 font-display text-lg font-extrabold">
+          <span
+            className="flex h-9 w-9 items-center justify-center rounded-lg border-2 bg-[#FFD43B]"
+            style={{ borderColor: INK, boxShadow: `3px 3px 0 0 ${INK}` }}
+          >
+            ⚒️
+          </span>
           TaskForge
         </Link>
-        <blockquote className="relative z-10 space-y-2">
-          <p className="text-lg leading-relaxed">
-            &ldquo;We replaced three tools with TaskForge. Planning happens in one place, and the
-            burndown chart finally tells the truth.&rdquo;
-          </p>
-          <footer className="text-sm text-white/60">— A very satisfied engineering lead</footer>
-        </blockquote>
+
+        <div className="relative z-10 max-w-md">
+          <h2 className="font-display text-4xl font-extrabold leading-tight">
+            plan. track.{' '}
+            <span className="relative inline-block px-2">
+              <span className="absolute inset-0 -rotate-1 rounded-lg bg-[#FFD43B]" />
+              <span className="relative">ship it!</span>
+            </span>
+          </h2>
+          <figure
+            className="mt-8 -rotate-1 rounded-2xl border-2 bg-[#FFFDF6] p-5"
+            style={{ borderColor: INK, boxShadow: `5px 5px 0 0 ${INK}` }}
+          >
+            <blockquote className="text-sm font-semibold leading-relaxed">
+              &ldquo;We replaced three tools with TaskForge. Planning happens in one place, and the
+              burndown chart finally tells the truth.&rdquo;
+            </blockquote>
+            <figcaption className="mt-3 border-t-2 pt-2 text-xs font-bold opacity-70" style={{ borderColor: INK }}>
+              — a very satisfied engineering lead
+            </figcaption>
+          </figure>
+        </div>
+
+        <p className="relative z-10 text-xs font-bold opacity-60">
+          © {new Date().getFullYear()} TaskForge Inc.
+        </p>
       </div>
 
       {/* Form panel */}

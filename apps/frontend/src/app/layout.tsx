@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google';
 import { AppProviders } from '@/providers/app-providers';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
+const display = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['500', '700', '800'],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${mono.variable} font-sans`}>
+      <body className={`${inter.variable} ${mono.variable} ${display.variable} font-sans`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

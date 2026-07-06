@@ -5,5 +5,12 @@ module.exports = {
     './src/**/*.{ts,tsx}',
     '../../packages/shared-ui/src/**/*.{ts,tsx}',
   ],
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['var(--font-display)', 'sans-serif'],
+      },
+    },
+  },
   plugins: [require('tailwindcss-animate')],
 };
