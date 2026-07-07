@@ -41,3 +41,5 @@ apps/backend/uploads/
 # Misc
 .turbo/
 .cache/
+
+.vercel
