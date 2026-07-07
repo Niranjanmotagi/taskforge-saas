@@ -11,10 +11,15 @@ import type { DeviceInfo } from './session.service';
 
 export const REFRESH_COOKIE = 'tf_refresh';
 
+// Cross-site (SameSite=None) requires Secure=true, so force it on in that mode
+// even outside NODE_ENV=production. This lets a Vercel front-end talk to the
+// API on a different domain.
+const CROSS_SITE = env.COOKIE_SAMESITE === 'none';
+
 const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: env.isProduction,
-  sameSite: 'lax',
+  secure: env.isProduction || CROSS_SITE,
+  sameSite: env.COOKIE_SAMESITE,
   // Only sent to auth endpoints — never rides along on normal API calls.
   path: '/api/v1/auth',
 };

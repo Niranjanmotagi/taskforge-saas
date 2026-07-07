@@ -3,14 +3,19 @@ import { env } from '@/config/env';
 import { logger } from '@/lib/logger';
 
 function createRedisClient(purpose: string): Redis {
-  const client = new Redis({
-    host: env.REDIS_HOST,
-    port: env.REDIS_PORT,
-    password: env.REDIS_PASSWORD || undefined,
-    // BullMQ requires maxRetriesPerRequest to be null on its connections.
-    maxRetriesPerRequest: purpose === 'queue' ? null : 2,
-    retryStrategy: (times) => Math.min(times * 200, 5000),
-  });
+  // BullMQ requires maxRetriesPerRequest to be null on its connections.
+  const maxRetriesPerRequest = purpose === 'queue' ? null : 2;
+  const retryStrategy = (times: number) => Math.min(times * 200, 5000);
+  // Managed hosts (Upstash/Render) provide a single rediss:// URL with TLS.
+  const client = env.REDIS_URL
+    ? new Redis(env.REDIS_URL, { maxRetriesPerRequest, retryStrategy })
+    : new Redis({
+        host: env.REDIS_HOST,
+        port: env.REDIS_PORT,
+        password: env.REDIS_PASSWORD || undefined,
+        maxRetriesPerRequest,
+        retryStrategy,
+      });
   client.on('error', (err) => logger.error(`redis(${purpose}) error: ${err.message}`));
   client.on('connect', () => logger.info(`redis(${purpose}) connected`));
   return client;

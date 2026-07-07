@@ -19,8 +19,8 @@ async function main(): Promise<void> {
   const { startCronJobs } = await import('@/jobs');
   startCronJobs();
 
-  server.listen(env.API_PORT, () => {
-    logger.info(`🚀 ${env.APP_NAME} API listening on :${env.API_PORT} (${env.NODE_ENV})`);
+  server.listen(env.port, () => {
+    logger.info(`🚀 ${env.APP_NAME} API listening on :${env.port} (${env.NODE_ENV})`);
     if (!env.isProduction) {
       logger.info(`📘 Swagger docs at ${env.API_URL}/api/docs`);
     }

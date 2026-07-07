@@ -16,10 +16,15 @@ const envSchema = z.object({
   APP_NAME: z.string().default('TaskForge'),
   APP_URL: z.string().url().default('http://localhost:3000'),
   API_URL: z.string().url().default('http://localhost:5000'),
+  // Hosts like Render/Railway inject PORT; fall back to API_PORT then 5000.
+  PORT: z.coerce.number().int().positive().optional(),
   API_PORT: z.coerce.number().int().positive().default(5000),
 
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
+  // Managed Redis (Upstash/Render) is provided as a single URL; discrete
+  // host/port/password remain for local docker.
+  REDIS_URL: z.string().optional().default(''),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().int().default(6379),
   REDIS_PASSWORD: z.string().optional().default(''),
@@ -31,6 +36,9 @@ const envSchema = z.object({
   JWT_REFRESH_REMEMBER_EXPIRES_IN: z.string().default('30d'),
   COOKIE_SECRET: z.string().min(32, 'COOKIE_SECRET must be at least 32 chars'),
   COOKIE_DOMAIN: z.string().default('localhost'),
+  // 'none' (with Secure) is required when the API and web app are on
+  // different domains (e.g. Vercel front-end + Render API).
+  COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   BCRYPT_SALT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
 
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
@@ -86,7 +94,11 @@ export const env = {
   isProduction: parsed.data.NODE_ENV === 'production',
   isDevelopment: parsed.data.NODE_ENV === 'development',
   isTest: parsed.data.NODE_ENV === 'test',
-  corsOrigins: parsed.data.CORS_ORIGINS.split(',').map((o) => o.trim()),
+  /** Port the HTTP server binds to (host-provided PORT wins). */
+  port: parsed.data.PORT ?? parsed.data.API_PORT,
+  corsOrigins: parsed.data.CORS_ORIGINS.split(',')
+    .map((o) => o.trim())
+    .filter(Boolean),
 };
 
 export type Env = typeof env;
