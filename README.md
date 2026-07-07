@@ -4,7 +4,7 @@
 
 Built with Next.js, Express, PostgreSQL, Redis, Socket.IO, Prisma, Stripe, Cloudinary, and Claude.
 
-**🔗 Live demo (UI):** [taskforge-saas.vercel.app](https://taskforge-saas.vercel.app)
+**🔗 Live demo:** [taskforge-saas.vercel.app](https://taskforge-saas.vercel.app) — full stack, real sign-up works
 
 <p>
   <a href="https://taskforge-saas.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/demo-live-brightgreen?logo=vercel&logoColor=white"></a>
@@ -13,9 +13,11 @@ Built with Next.js, Express, PostgreSQL, Redis, Socket.IO, Prisma, Stripe, Cloud
   <img alt="License" src="https://img.shields.io/badge/license-proprietary-lightgrey">
 </p>
 
-> The live demo hosts the front-end (marketing site + full app UI). Sign-in and
-> live data require the backend (Express + PostgreSQL + Redis), which runs
-> locally or via the production Docker stack — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+> **Try it:** create an account, or sign in with the demo login
+> **`demo@taskforge.local`** / **`Demo1234!`** to explore a seeded workspace.
+> Stack: Next.js on Vercel · Express API + Socket.IO on Render · PostgreSQL on
+> Neon · Redis on Render. The API is on a free tier, so the very first request
+> after idle may take ~50s to wake — subsequent requests are instant.
 
 ---
 
