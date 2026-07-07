@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Bell, LogOut, Moon, Search, Sun, User } from 'lucide-react';
+import { Bell, LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { formatDistanceToNow } from 'date-fns';
 import { get, post } from '@/lib/api';
@@ -123,12 +123,20 @@ function NotificationsBell() {
 export function Topbar({ title }: { title?: string }) {
   const user = useAuthStore((s) => s.user);
   const setCommandOpen = useUiStore((s) => s.setCommandOpen);
+  const setMobileSidebarOpen = useUiStore((s) => s.setMobileSidebarOpen);
   const { resolvedTheme, setTheme } = useTheme();
   const logout = useLogout();
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-background px-4">
       <div className="flex min-w-0 items-center gap-3">
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="-ml-1 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
         {title ? <h1 className="truncate text-sm font-semibold">{title}</h1> : null}
       </div>
 

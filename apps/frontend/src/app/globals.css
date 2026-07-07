@@ -11,9 +11,30 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: 'ss01', 'cv05';
+    /* Content protection: disable text selection across the app. */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Re-enable selection only where the user genuinely needs to type/edit. */
+  input,
+  textarea,
+  select,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
   }
   ::selection {
     @apply bg-primary/20;
+  }
+  /* Images can't be dragged out. */
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
   }
 }
 

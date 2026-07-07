@@ -294,7 +294,7 @@ const PLANS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#FBF6EC]" style={{ color: INK }}>
+    <div className="min-h-screen overflow-x-hidden bg-[#FBF6EC]" style={{ color: INK }}>
       {/* ── Nav (floating pill) ─────────────────────────────────────────── */}
       <header className="sticky top-4 z-50 px-4">
         <div
