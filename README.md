@@ -4,11 +4,18 @@
 
 Built with Next.js, Express, PostgreSQL, Redis, Socket.IO, Prisma, Stripe, Cloudinary, and Claude.
 
+**🔗 Live demo (UI):** [taskforge-saas.vercel.app](https://taskforge-saas.vercel.app)
+
 <p>
+  <a href="https://taskforge-saas.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/demo-live-brightgreen?logo=vercel&logoColor=white"></a>
   <img alt="CI" src="https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white">
   <img alt="License" src="https://img.shields.io/badge/license-proprietary-lightgrey">
 </p>
+
+> The live demo hosts the front-end (marketing site + full app UI). Sign-in and
+> live data require the backend (Express + PostgreSQL + Redis), which runs
+> locally or via the production Docker stack — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
