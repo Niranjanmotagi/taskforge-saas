@@ -138,8 +138,15 @@ export async function resendVerification(req: Request, res: Response): Promise<v
 
 export function oauthStart(provider: oauthService.OAuthProvider) {
   return async (_req: Request, res: Response): Promise<void> => {
-    const url = await oauthService.buildAuthorizeUrl(provider);
-    res.redirect(url);
+    // This endpoint is reached via full-page navigation, so on any failure
+    // (e.g. provider not configured) redirect back to the app with a friendly
+    // error rather than rendering a raw JSON error page.
+    try {
+      const url = await oauthService.buildAuthorizeUrl(provider);
+      res.redirect(url);
+    } catch {
+      res.redirect(`${env.APP_URL}/login?error=oauth_unavailable`);
+    }
   };
 }
 
