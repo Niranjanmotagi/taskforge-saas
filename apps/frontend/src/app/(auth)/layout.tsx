@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LogoMark } from '@/components/brand/logo';
 
 const INK = '#161616';
 
@@ -25,12 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
 
         <Link href="/" className="relative z-10 inline-flex w-fit items-center gap-2 font-display text-lg font-extrabold">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-lg border-2 bg-[#FFD43B]"
-            style={{ borderColor: INK, boxShadow: `3px 3px 0 0 ${INK}` }}
-          >
-            ⚒️
-          </span>
+          <LogoMark size={36} shadow />
           TaskForge
         </Link>
 

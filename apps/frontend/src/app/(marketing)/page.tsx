@@ -10,6 +10,7 @@ import {
   Star,
   Zap,
 } from 'lucide-react';
+import { LogoMark } from '@/components/brand/logo';
 
 /**
  * Marketing landing page — playful neo-brutalist style:
@@ -301,12 +302,7 @@ export default function LandingPage() {
           style={{ borderColor: INK, boxShadow: `4px 4px 0 0 ${INK}` }}
         >
           <Link href="/" className="flex items-center gap-2 font-display text-lg font-extrabold">
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-lg border-2 bg-[#FFD43B]"
-              style={{ borderColor: INK }}
-            >
-              ⚒️
-            </span>
+            <LogoMark size={34} />
             TaskForge
           </Link>
           <nav className="hidden items-center gap-6 font-display text-sm font-bold md:flex">
@@ -579,12 +575,7 @@ export default function LandingPage() {
       <footer className="border-t-2 bg-[#161616] px-4 py-10 text-[#FBF6EC]" style={{ borderColor: INK }}>
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 md:flex-row">
           <span className="flex items-center gap-2 font-display font-extrabold">
-            <span
-              className="flex h-7 w-7 items-center justify-center rounded-lg border-2 bg-[#FFD43B] text-sm"
-              style={{ borderColor: '#FBF6EC' }}
-            >
-              ⚒️
-            </span>
+            <LogoMark size={28} />
             TaskForge
           </span>
           <nav className="flex items-center gap-5 text-sm font-semibold text-[#FBF6EC]/70">
